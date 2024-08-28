@@ -4,7 +4,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 
 # Initialize the Flask application
 app = Flask(__name__)
-app.secret_key = 'super_secret_game'  # Used for session management
+app.secret_key = 'super_secret_key'  # Used for session management
 
 # Function to connect to the SQLite3 database
 def get_db_connection():
