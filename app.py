@@ -4,7 +4,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 
 # Initialize the Flask application
 app = Flask(__name__)
-app.secret_key = 'your_secret_key'  # Used for session management
+app.secret_key = 'super_secret_game'  # Used for session management
 
 # Function to connect to the SQLite3 database
 def get_db_connection():
@@ -20,6 +20,7 @@ def init_db():
         CREATE TABLE IF NOT EXISTS users (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             username TEXT NOT NULL UNIQUE,
+            email TEXT NOT NULL,
             password TEXT NOT NULL
         )
         """)
@@ -39,15 +40,16 @@ def home():
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
-        username = request.form['username']
+        email = request.form['email']
         password = request.form['password']
 
         conn = get_db_connection()
-        user = conn.execute('SELECT * FROM users WHERE username = ?', (username,)).fetchone()
+        user = conn.execute('SELECT * FROM users WHERE username = ?', (email,)).fetchone()
         conn.close()
 
         if user and check_password_hash(user['password'], password):
             session['user_id'] = user['id']
+            session['username'] = user['name'] #this is important for later when we get the users name 
             return redirect(url_for('home'))
 
         return 'Invalid credentials, please try again.'
@@ -59,13 +61,14 @@ def login():
 def register():
     if request.method == 'POST':
         username = request.form['username']
+        email =request.form['email']
         password = request.form['password']
         hashed_password = generate_password_hash(password)
 
         conn = get_db_connection()
         try:
-            conn.execute('INSERT INTO users (username, password) VALUES (?, ?)',
-                         (username, hashed_password))
+            conn.execute('INSERT INTO users (username, email, password) VALUES (?, ?, ?)',
+                         (username, email, hashed_password))
             conn.commit()
         except sqlite3.IntegrityError:
             return 'Username already exists, please choose another one.'

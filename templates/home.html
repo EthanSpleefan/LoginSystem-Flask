@@ -3,6 +3,9 @@
 {% block title %}Home{% endblock %}
 
 {% block content %}
-<h1>Welcome to the Home Page!</h1>
-<p>You are logged in as {{ session.get('user_id') }}.</p>
+<h1>Welcome Back {{session.get('getname') }}!</h1> <!-- We can use {{session.get('name') }} because we passed it in app.py as an session attribute -->
+<p></p>
+<footer>
+    <p>&copy; 2024 Your Application Name</p>
+</footer>
 {% endblock %}
